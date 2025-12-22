@@ -1,0 +1,12 @@
+import java_cup.runtime.*;
+
+terminal PLUS, NUM;
+non terminal expr, term;
+
+precedence left PLUS;
+
+expr ::= expr PLUS expr
+       | term
+       ;
+
+term ::= NUM;
