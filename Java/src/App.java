@@ -17,13 +17,13 @@ public class App {
 
         mfjc = new MainJFlexCup();
 
-        Files.deleteIfExists(Paths.get(basePath + "\\src\\lexer\\lexer.flex"));
+        Files.deleteIfExists(Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\sym.java"));
 
         fullPathLexer = basePath + "\\Java\\src\\main\\java\\generated\\lexer.flex";
         fullPathparser = basePath + "\\Java\\src\\parser\\parser.cup";
         jparser = "parser.java";
         jlexer = "Lexer.java";
-        jlexerCarpeta = "generated";
+        jlexerCarpeta = "\\main\\java\\generated";
 
         Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\main\\java\\generated\\" + jparser));
         Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\main\\java\\generated\\" + jlexer));
@@ -32,7 +32,7 @@ public class App {
 
         Files.move(Paths.get(basePath+"\\sym.java"), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\sym.java"));
         Files.move(Paths.get(basePath+"\\"+ jparser), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\"+ jparser));
-        Files.move(Paths.get(basePath+"\\Java\\src\\" + jlexerCarpeta + "\\" + jlexer), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\" + jlexer));
+        Files.move(Paths.get(basePath+"\\Java\\src\\main\\java\\" + jlexerCarpeta + "\\" + jlexer), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\" + jlexer));
 
     }
 
@@ -52,7 +52,6 @@ public class App {
         GenerarLexerParser();
     }
 }
-
 
 
 
