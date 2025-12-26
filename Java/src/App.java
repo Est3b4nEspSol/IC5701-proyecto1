@@ -1,3 +1,5 @@
+
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -10,16 +12,18 @@ public class App {
 
         basePath = System.getProperty("user.dir");
         //.java de parser y lexer
-        jlexer = "Lexer.java";
+        jlexer = "generated.Lexer.java";
         jparser = "Parser.java";
 
         mfjc = new MainJFlexCup();
 
         Files.deleteIfExists(Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\sym.java"));
 
-        fullPathLexer = basePath + "\\Java\\src\\main\\java\\generated\\lexer.flex";
+        fullPathLexer = basePath + "\\Java\\src\\lexer\\lexer.flex";
         fullPathparser = basePath + "\\Java\\src\\parser\\parser.cup";
         jparser = "parser.java";
+        jlexer = "generated.Lexer.java";
+        jlexerCarpeta = "\\main\\java\\generated";
         jlexer = "Lexer.java";
         jlexerCarpeta = "generated";
 

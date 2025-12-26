@@ -15,7 +15,7 @@ public class MainJFlexCup {
 
     public void iniLexerParser(String rutaLexer, String rutaParser) throws internal_error, Exception{
         GenerateLexer(rutaLexer);
-        Generateparser(rutaParser);
+        GenerateParser(rutaParser);
     }
 
     public void GenerateLexer(String ruta) throws IOException, SilentExit{
@@ -23,7 +23,7 @@ public class MainJFlexCup {
         jflex.Main.generate(strArr);
     }
 
-    public void Generateparser(String ruta) throws internal_error, IOException, Exception{
+    public void GenerateParser(String ruta) throws internal_error, IOException, Exception{
         String[] strArr = {ruta};
         java_cup.Main.main(strArr);
     }
