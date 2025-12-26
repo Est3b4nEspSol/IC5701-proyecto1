@@ -1,5 +1,3 @@
-import generated.MainJFlexCup;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -23,7 +21,7 @@ public class App {
         fullPathparser = basePath + "\\Java\\src\\parser\\parser.cup";
         jparser = "parser.java";
         jlexer = "Lexer.java";
-        jlexerCarpeta = "\\main\\java\\generated";
+        jlexerCarpeta = "generated";
 
         Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\main\\java\\generated\\" + jparser));
         Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\main\\java\\generated\\" + jlexer));
@@ -31,8 +29,11 @@ public class App {
         mfjc.iniLexerParser(fullPathLexer, fullPathparser);
 
         Files.move(Paths.get(basePath+"\\sym.java"), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\sym.java"));
+        System.out.println("oli1");
         Files.move(Paths.get(basePath+"\\"+ jparser), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\"+ jparser));
+        System.out.println("oli2");
         Files.move(Paths.get(basePath+"\\Java\\src\\main\\java\\" + jlexerCarpeta + "\\" + jlexer), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\" + jlexer));
+        System.out.println("breteó");
 
     }
 
