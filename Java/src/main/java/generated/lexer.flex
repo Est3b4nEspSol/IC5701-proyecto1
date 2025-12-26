@@ -1,7 +1,7 @@
 import java_cup.runtime.*;
 
 %%
-%class Lexer
+%class generated.Lexer
 %public
 %unicode
 %cup
