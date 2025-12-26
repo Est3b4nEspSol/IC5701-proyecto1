@@ -21,7 +21,7 @@ public class App {
 
         fullPathLexer = basePath + "\\Java\\src\\main\\java\\generated\\lexer.flex";
         fullPathparser = basePath + "\\Java\\src\\parser\\parser.cup";
-        jparser = "ParserIni.java";
+        jparser = "parser.java";
         jlexer = "Lexer.java";
         jlexerCarpeta = "generated";
 
@@ -52,6 +52,7 @@ public class App {
         GenerarLexerParser();
     }
 }
+
 
 
 
