@@ -17,25 +17,27 @@ public class MainJFlexCup {
     public void iniLexerParser(String rutaLexer, String rutaParser) throws internal_error, Exception {
         GenerateLexer(rutaLexer);
         Generateparser(rutaParser);
-    }
+    } // este método simplemente se encarga de invocar los métodos para generar los productos de lexer y parser
 
     public void GenerateLexer(String ruta) throws IOException, SilentExit {
         String[] strArr = {ruta};
         jflex.Main.generate(strArr);
-    }
+    } // se llama a la librería jflex para generar el lexer
 
     public void Generateparser(String ruta) throws internal_error, IOException, Exception {
         String[] strArr = {ruta};
         java_cup.Main.main(strArr);
-    }
+    } // se llama a la librería java_cup para generar el parser
 
     public void prueba(String rutaScanear) throws IOException {
         Reader reader = new BufferedReader(new FileReader(rutaScanear));
         Lexer lex = new Lexer(reader);
-        int i = 0;
         Symbol token;
         BufferedWriter writer = null;
 
+        // en esta sección es donde ocurre lo más importa a nivel de usuario
+        // el programa crea el archivo, si no existe, para guardar los tokens y sus datos asociados
+        // además, al ser un try cath, mantenemos un poco mejor el manejo de errores al escribir el archivo
         try {
             Path carpeta = Path.of(System.getProperty("user.dir")).resolve("Java").resolve("src").resolve("codigoPrueba");
             Path archivo = carpeta.resolve("tokens.txt");
@@ -61,11 +63,10 @@ public class MainJFlexCup {
 
 
                 // Escribir en archivo con línea y columna
-                writer.write(" token: " + token.sym + " lexema: " + valor +
-                        "Línea:" + linea + " Columna:" + columna);
+                writer.write("token: " + token.sym + " lexema: " + valor +
+                        " Línea: " + linea + " Columna: " + columna);
                 writer.newLine();
 
-                i++;
             }
             System.out.println("***Tokens registrados en el archivo tokens.txt en la carpeta codigoPrueba.***");
 
@@ -81,15 +82,6 @@ public class MainJFlexCup {
     }
 
     public static void main(String[] args) throws Exception {
-        String input = "12 + 34 + 5";
-        System.out.println(System.getProperty("user.dir"));
 
-        Lexer lexer = new Lexer(new StringReader(input));
-        parser parser = new parser(lexer);
-
-        parser.parse();
-
-        System.out.println("Análisis completado correctamente.");
     }
 }
-
