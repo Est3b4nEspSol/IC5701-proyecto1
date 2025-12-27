@@ -1,3 +1,4 @@
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -39,15 +40,28 @@ public class App {
     }
 
     public static void PruebasLexerParser() throws Exception{
-        String basePath, fullPathScanner, fullPathParser = "";
-        MainJFlexCup mfjc;
+        String basePath, fullPathScanner, nombre, fullPathParser = "";
+        MainJFlexCup mfjc = new MainJFlexCup();
+        Scanner scanner = new Scanner(System.in);
 
         basePath = System.getProperty("user.dir");
-        fullPathScanner = basePath + "\\Java\\src\\prueba1.txt";
 
-         mfjc = new MainJFlexCup();
-         mfjc.prueba1(fullPathScanner);
+        while(true){
+            System.out.println("Indiciar nombre del archivo en formato .txt (sin agregar .txt al final): ");
+            nombre = scanner.nextLine();
+            fullPathScanner = basePath + "\\Java\\src\\" + nombre +".txt";
 
+            File archivo = new File(fullPathScanner);
+
+            if (!archivo.exists()) {
+                System.out.println("El archivo '" + nombre + ".txt' no existe, ingrese uno que se encuentre en la carpeta src.");
+            }
+            else{
+                break;
+            }
+        }
+        scanner.close();
+        mfjc.prueba(fullPathScanner);
     }
 
     public static void main(String[] args) throws Exception{
@@ -82,7 +96,3 @@ public class App {
         scanner.close();
     }
 }
-
-
-
-
