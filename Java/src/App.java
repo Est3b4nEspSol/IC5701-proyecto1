@@ -47,7 +47,7 @@ public class App {
         basePath = System.getProperty("user.dir");
 
         while(true){
-            System.out.println("Indiciar nombre del archivo en formato .txt (sin agregar .txt al final): ");
+            System.out.println("Indicar nombre del archivo en formato .txt (sin agregar .txt al final): ");
             nombre = scanner.nextLine();
             fullPathScanner = basePath + "\\Java\\src\\" + nombre +".txt";
 
@@ -96,3 +96,4 @@ public class App {
         scanner.close();
     }
 }
+
