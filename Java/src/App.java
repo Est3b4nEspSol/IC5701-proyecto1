@@ -5,15 +5,13 @@ import java.util.Scanner;
 
 
 public class App {
+    private static final Scanner scanner = new Scanner(System.in);
 
     public static void GenerarLexerParser() throws Exception{
         String basePath, fullPathLexer, fullPathparser, jlexer, jparser, jlexerCarpeta;
         MainJFlexCup mfjc;
 
         basePath = System.getProperty("user.dir");
-        //.java de parser y lexer
-        jlexer = "Lexer.java";
-        jparser = "Parser.java";
 
         mfjc = new MainJFlexCup();
 
@@ -31,30 +29,26 @@ public class App {
         mfjc.iniLexerParser(fullPathLexer, fullPathparser);
 
         Files.move(Paths.get(basePath+"\\sym.java"), Paths.get(basePath + "\\Java\\src\\generated\\sym.java"));
-        System.out.println("oli1");
         Files.move(Paths.get(basePath+"\\"+ jparser), Paths.get(basePath + "\\Java\\src\\generated\\"+ jparser));
-        System.out.println("oli2");
         Files.move(Paths.get(basePath+"\\Java\\src\\" + jlexerCarpeta + "\\" + jlexer), Paths.get(basePath + "\\Java\\src\\generated\\" + jlexer));
-        System.out.println("breteó");
 
     }
 
     public static void PruebasLexerParser() throws Exception{
-        String basePath, fullPathScanner, nombre, fullPathParser = "";
+        String basePath, fullPathScanner, nombre;
         MainJFlexCup mfjc = new MainJFlexCup();
-        Scanner scanner = new Scanner(System.in);
 
         basePath = System.getProperty("user.dir");
 
         while(true){
-            System.out.println("Indiciar nombre del archivo en formato .txt (sin agregar .txt al final): ");
+            System.out.println("Indicar nombre del archivo (en la carpeta codigoPrueba) en formato .txt (sin agregar .txt al final): ");
             nombre = scanner.nextLine();
-            fullPathScanner = basePath + "\\Java\\src\\" + nombre +".txt";
+            fullPathScanner = basePath + "\\Java\\src\\codigoPrueba\\" + nombre +".txt";
 
             File archivo = new File(fullPathScanner);
 
             if (!archivo.exists()) {
-                System.out.println("El archivo '" + nombre + ".txt' no existe, ingrese uno que se encuentre en la carpeta src.");
+                System.out.println("El archivo '" + nombre + ".txt' no existe, ingrese uno que se encuentre en la carpeta codigoPrueba de la carpeta src");
             }
             else{
                 break;
@@ -64,7 +58,6 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception{
-        Scanner scanner = new Scanner(System.in);
         int opcion = 0;
 
         while (opcion != 3) {
@@ -99,9 +92,9 @@ public class App {
                     System.out.println("Opción inválida. Intente de nuevo.");
             }
         }
-
-        scanner.close();
     }
 }
+
+
 
 
