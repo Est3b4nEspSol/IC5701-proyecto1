@@ -1,3 +1,4 @@
+package generated;
 import java_cup.runtime.*;
 
 %%

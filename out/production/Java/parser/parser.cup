@@ -1,28 +1,17 @@
-package main.java.generated;
+package generated;
 import java_cup.runtime.*;
-import java.util.ArrayList;
+
 
 parser code {:
-    // Variables para manejo de errores
-    private java.util.ArrayList<String> errors = new java.util.ArrayList<>();
 
-    public void report_error(String message, Object info) {
-        String errorMsg = "Error sintáctico";
-        if (info instanceof Symbol) {
-            Symbol s = (Symbol) info;
-            errorMsg += " en línea " + s.left + ", columna " + s.right;
-            if (s.value != null) {
-                errorMsg += " cerca de '" + s.value + "'";
-            }
-        }
-        errorMsg += ": " + message;
-        errors.add(errorMsg);
-        System.err.println(errorMsg);
-    }
+    // Connect this parser to a scanner!
+    lexer lex;
+    Parser(lexer lex){ this.lex=lex; }
+:}
 
-    public java.util.ArrayList<String> getErrors() {
-        return errors;
-    }
+    /* define how to connect to the scanner! */
+    init with {: :};
+    scan with {: return lex.next_token();
 :};
 
 /* Terminales  */
@@ -55,7 +44,7 @@ terminal
     COMMA, SEMI, COLON, DOT, ASSIGN, ARROW,
 
     /* Especiales */
-    ERROR, EOF;
+    ERROR;
 
 /* regla vacía solo para que CUP funcione */
 non terminal programa;
