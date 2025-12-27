@@ -51,7 +51,6 @@ public class sym {
   public static final int RBRACKET = 54;
   public static final int EQUAL = 44;
   public static final int GREATER_EQUAL = 43;
-  public static final int STRING_TYPE = 24;
   public static final int error = 1;
   public static final int MODULO = 36;
   public static final int BREAK = 18;
@@ -66,6 +65,7 @@ public class sym {
   public static final int RBRACE = 50;
   public static final int END = 7;
   public static final int INT_DIV = 35;
+  public static final int STRING = 24;
   public static final int LOCAL = 3;
   public static final int GIFT = 12;
   public static final int BOOL_LITERAL = 27;
@@ -95,7 +95,7 @@ public class sym {
   "FLOAT",
   "BOOL",
   "CHAR",
-  "STRING_TYPE",
+  "STRING",
   "LITERAL_INTEGER",
   "LITERAL_FLOAT",
   "BOOL_LITERAL",

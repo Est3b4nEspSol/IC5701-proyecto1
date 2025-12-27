@@ -5,8 +5,8 @@ import java_cup.runtime.*;
 parser code {:
 
     // Connect this parser to a scanner!
-    lexer lex;
-    Parser(lexer lex){ this.lex=lex; }
+    Lexer lex;
+    parser(Lexer lex){ this.lex=lex; }
 :}
 
     /* define how to connect to the scanner! */
@@ -21,7 +21,7 @@ terminal
     NAVIDAD, COAL, SHOW, GET, RETURN, BREAK, ENDL,
 
     /* Tipos de Datos */
-    INT, FLOAT, BOOL, CHAR, STRING_TYPE,
+    INT, FLOAT, BOOL, CHAR, STRING,
 
     /* Literales */
     LITERAL_INTEGER, LITERAL_FLOAT, BOOL_LITERAL, CHAR_LITERAL, STRING_LITERAL,
