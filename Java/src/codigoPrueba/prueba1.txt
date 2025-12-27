@@ -1,1 +1,11 @@
-aslñ 5 -123 41.151 int a == 3 endl
+world local decide of else end loop exit when for gift navidad coal show get return
+
+int float bool string true false
+
+-12 3.14 "hola" variable
+
+@ ~ Σ
+
+¡ ! ¿ ? [ ]
+
+, ; : . = ->
