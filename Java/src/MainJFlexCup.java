@@ -38,7 +38,7 @@ public class MainJFlexCup {
         {
             token = lex.next_token();
             if(token.sym != 0){
-                System.out.println("token: "+ ", valor: " +(token.value == null?lex.yytext():token.value.toString()));
+                System.out.println("token: "+ token.sym + ", valor: " +(token.value == null?lex.yytext():token.value.toString()));
             }
             else {
                 System.out.println("Cantidad de lexemas encontrados: " + i);
@@ -61,3 +61,4 @@ public class MainJFlexCup {
         System.out.println("Análisis completado correctamente.");
     }
 }
+
