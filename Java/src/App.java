@@ -47,7 +47,7 @@ public class App {
         basePath = System.getProperty("user.dir");
 
         while(true){
-            System.out.println("Indicar nombre del archivo en formato .txt (sin agregar .txt al final): ");
+            System.out.println("Indiciar nombre del archivo en formato .txt (sin agregar .txt al final): ");
             nombre = scanner.nextLine();
             fullPathScanner = basePath + "\\Java\\src\\" + nombre +".txt";
 
@@ -60,7 +60,6 @@ public class App {
                 break;
             }
         }
-        scanner.close();
         mfjc.prueba(fullPathScanner);
     }
 
@@ -76,7 +75,15 @@ public class App {
             System.out.println("3. Salir");
             System.out.print("Opción: ");
 
-            opcion = scanner.nextInt();
+            String input = scanner.nextLine(); // leer línea completa
+
+            try {
+                opcion = Integer.parseInt(input); // convertir
+            } catch (NumberFormatException e) {
+                System.out.println("Opción inválida. Debe ingresar un número.");
+                opcion = 0;
+                continue;
+            }
 
             switch (opcion) {
                 case 1:
@@ -96,4 +103,5 @@ public class App {
         scanner.close();
     }
 }
+
 
