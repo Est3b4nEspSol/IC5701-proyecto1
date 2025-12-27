@@ -1,0 +1,9 @@
+Línea:1 Columna:1 token: 30 lexema: aslñ
+Línea:1 Columna:6 token: 25 lexema: 5
+Línea:1 Columna:8 token: 25 lexema: -123
+Línea:1 Columna:13 token: 26 lexema: 41.151
+Línea:1 Columna:20 token: 20 lexema: int
+Línea:1 Columna:24 token: 30 lexema: a
+Línea:1 Columna:26 token: 44 lexema: ==
+Línea:1 Columna:29 token: 25 lexema: 3
+Línea:1 Columna:31 token: 19 lexema: endl
