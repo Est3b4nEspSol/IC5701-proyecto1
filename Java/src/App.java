@@ -16,24 +16,24 @@ public class App {
 
         mfjc = new MainJFlexCup();
 
-        Files.deleteIfExists(Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\sym.java"));
+        Files.deleteIfExists(Paths.get(basePath + "\\Java\\src\\generated\\sym.java"));
 
-        fullPathLexer = basePath + "\\Java\\src\\main\\java\\generated\\lexer.flex";
+        fullPathLexer = basePath + "\\Java\\src\\generated\\lexer.flex";
         fullPathparser = basePath + "\\Java\\src\\parser\\parser.cup";
         jparser = "parser.java";
         jlexer = "Lexer.java";
         jlexerCarpeta = "generated";
 
-        Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\main\\java\\generated\\" + jparser));
-        Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\main\\java\\generated\\" + jlexer));
+        Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\generated\\" + jparser));
+        Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\generated\\" + jlexer));
 
         mfjc.iniLexerParser(fullPathLexer, fullPathparser);
 
-        Files.move(Paths.get(basePath+"\\sym.java"), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\sym.java"));
+        Files.move(Paths.get(basePath+"\\sym.java"), Paths.get(basePath + "\\Java\\src\\generated\\sym.java"));
         System.out.println("oli1");
-        Files.move(Paths.get(basePath+"\\"+ jparser), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\"+ jparser));
+        Files.move(Paths.get(basePath+"\\"+ jparser), Paths.get(basePath + "\\Java\\src\\generated\\"+ jparser));
         System.out.println("oli2");
-        Files.move(Paths.get(basePath+"\\Java\\src\\main\\java\\" + jlexerCarpeta + "\\" + jlexer), Paths.get(basePath + "\\Java\\src\\main\\java\\generated\\" + jlexer));
+        Files.move(Paths.get(basePath+"\\Java\\src\\" + jlexerCarpeta + "\\" + jlexer), Paths.get(basePath + "\\Java\\src\\generated\\" + jlexer));
         System.out.println("breteó");
 
     }
@@ -43,7 +43,7 @@ public class App {
         MainJFlexCup mfjc;
 
         basePath = System.getProperty("user.dir");
-        fullPathScanner = basePath + "\\Java\\src\\codigoPrueba\\prueba1.txt";
+        fullPathScanner = basePath + "\\Java\\src\\prueba1.txt";
 
          mfjc = new MainJFlexCup();
          mfjc.prueba1(fullPathScanner);
