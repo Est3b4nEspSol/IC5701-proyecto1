@@ -5,16 +5,15 @@ import java.util.Scanner;
 
 
 public class App {
-    private static final Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in); // inicializamos un scanner general (modo singleton) para evitar problemas
 
     public static void GenerarLexerParser() throws Exception{
-        String basePath, fullPathLexer, fullPathparser, jlexer, jparser, jlexerCarpeta;
-        MainJFlexCup mfjc;
+        String basePath, fullPathLexer, fullPathparser, jlexer, jparser, jlexerCarpeta; // se crean variables para el manejo de archivos
+        MainJFlexCup mfjc = new MainJFlexCup();
 
-        basePath = System.getProperty("user.dir");
+        basePath = System.getProperty("user.dir"); //camino base para prácticamente todo lo que hacemos
 
-        mfjc = new MainJFlexCup();
-
+        // en esta sección vamos a borrar todos los archivos generados por el lexer.flex y el parser.cup
         Files.deleteIfExists(Paths.get(basePath + "\\Java\\src\\generated\\sym.java"));
 
         fullPathLexer = basePath + "\\Java\\src\\generated\\lexer.flex";
@@ -26,6 +25,7 @@ public class App {
         Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\generated\\" + jparser));
         Files.deleteIfExists(Paths.get(basePath+ "\\Java\\src\\generated\\" + jlexer));
 
+        // en esta sección vamos a mover los archivos generados por el lexer a una misma carpeta llamada generated para mantener el orden
         mfjc.iniLexerParser(fullPathLexer, fullPathparser);
 
         Files.move(Paths.get(basePath+"\\sym.java"), Paths.get(basePath + "\\Java\\src\\generated\\sym.java"));
@@ -34,12 +34,14 @@ public class App {
 
     }
 
-    public static void PruebasLexerParser() throws Exception{
-        String basePath, fullPathScanner, nombre;
+    public static void PruebasLexerParser() throws Exception{ // como su nombre indica, con este método hacemos pruebas
+        String basePath, fullPathScanner, nombre; // se crean variables para trabajar después
         MainJFlexCup mfjc = new MainJFlexCup();
 
-        basePath = System.getProperty("user.dir");
+        basePath = System.getProperty("user.dir"); // inicializamos el camino base de los archivos
 
+        // esta sección es bastante autoexplicativa leyendo  los sout, pero se centra en
+        // pedir el nombre del archivo en el que vamos a utilizar el analizador léxico.
         while(true){
             System.out.println("Indicar nombre del archivo (en la carpeta codigoPrueba) en formato .txt (sin agregar .txt al final): ");
             nombre = scanner.nextLine();
@@ -54,13 +56,13 @@ public class App {
                 break;
             }
         }
-        mfjc.prueba(fullPathScanner);
+        mfjc.prueba(fullPathScanner); // aquí es donde trabajamos con los tokens
     }
 
     public static void main(String[] args) throws Exception{
         int opcion = 0;
 
-        while (opcion != 3) {
+        while (opcion != 3) { // autoexplicativa, interacción continua con el usuario
             System.out.println("=================================");
             System.out.println("Seleccione una opción:");
             System.out.println("1. Generar parser");
@@ -77,7 +79,8 @@ public class App {
                 opcion = 0;
                 continue;
             }
-
+            
+            // dependiendo del número que ingrese el usuario, el programa hará una de las siguientes acciones
             switch (opcion) {
                 case 1:
                     GenerarLexerParser();
@@ -94,7 +97,3 @@ public class App {
         }
     }
 }
-
-
-
-
