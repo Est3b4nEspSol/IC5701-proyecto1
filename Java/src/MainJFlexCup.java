@@ -67,6 +67,7 @@ public class MainJFlexCup {
 
                 i++;
             }
+            System.out.println("***Tokens registrados en el archivo tokens.txt en la carpeta codigoPrueba.***");
 
         } catch (IOException e) {
             System.out.println("Error al escribir el archivo de tokens");
@@ -91,3 +92,4 @@ public class MainJFlexCup {
         System.out.println("Análisis completado correctamente.");
     }
 }
+
