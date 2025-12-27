@@ -1,1 +1,1 @@
-int 45 abstract boolean === "hola mundo" -5.6 local world endl
+aslñ 5 -123 41.151 int a == 3 endl
