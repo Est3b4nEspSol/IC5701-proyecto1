@@ -104,8 +104,8 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
     // Connect this parser to a scanner!
-    lexer lex;
-    Parser(lexer lex){ this.lex=lex; }
+    Lexer lex;
+    parser(Lexer lex){ this.lex=lex; }
 
 
 /** Cup generated class to encapsulate user supplied action code.*/
