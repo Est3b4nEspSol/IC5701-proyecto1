@@ -1,0 +1,7 @@
+Nombre del curso: Compiladores e Intérpretes
+Número de semestre y año lectivo: Semestre 6 - 2025
+Nombre de los Estudiantes: Esteban Espinoza Solano - Alberto Guerrero Gabay
+Número de Carnet de los Estudiantes: 2023346381 - 2023095089
+Número de proyecto programado: Proyecto I: Análisis Léxico
+Fecha de entrega: 26/12/2025
+Estatus de la Entrega: Excelente
