@@ -1,0 +1,987 @@
+package generated;
+import java_cup.runtime.*;
+import Sintactico.*;
+
+parser code {:
+    Lexer lex;
+    SymTable symtab = new SymTable();
+    ArbolSintactico arbol;
+    int errorCount = 0;
+
+    public SymTable getSymTable() {
+            return symtab;
+        }
+    public ArbolSintactico getArbolSintactico() {
+        return arbol;
+    }
+
+    public int getErrorCount() { return errorCount; }
+
+    public void syntax_error(Symbol cur_token) {
+        errorCount++;
+        System.err.println("ERROR SINTÁCTICO (Línea " + (cur_token.left + 1) +
+                          ", Columna " + (cur_token.right + 1) + "): " +
+                          "Token inesperado '" + cur_token.value + "'");
+
+    }
+
+    public void unrecovered_syntax_error(Symbol cur_token) {
+        System.err.println("ERROR SINTÁCTICO IRRECUPERABLE - finalizando análisis");
+    }
+
+    parser(Lexer lex){
+            this.lex=lex;
+            this.arbol = null;
+        }
+:}
+
+/* Terminales (sin UMINUS) */
+terminal
+    /* Palabras Reservadas */
+    WORLD, LOCAL, DECIDE, OF, ELSE, END, LOOP, EXIT, WHEN, FOR, GIFT,
+    NAVIDAD, COAL, SHOW, GET, RETURN, BREAK, ENDL,
+
+    /* Tipos de Datos */
+    INT, FLOAT, BOOL, CHAR, STRING,
+
+    /* Literales */
+    LITERAL_INTEGER, LITERAL_FLOAT, BOOL_LITERAL, CHAR_LITERAL, STRING_LITERAL,
+    IDENTIFIER,
+
+    /* Operadores Aritméticos */
+    PLUS, MINUS, MULTIPLY, DIVIDE, INT_DIV, MODULO, POWER,
+    INCREMENT, DECREMENT,
+
+    /* Operadores Relacionales */
+    LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, EQUAL, NOT_EQUAL,
+
+    /* Operadores Lógicos */
+    AND, OR, NOT,
+
+    /* Delimitadores */
+    LBRACE, RBRACE, LPAREN, RPAREN, LBRACKET, RBRACKET,
+
+    /* Puntuación */
+    COMMA, ASSIGN, ARROW,
+
+    /* error */
+    ERROR;
+
+/* No terminales */
+non terminal program, functionList, mainFunction, functionDecl, arglist, funcall;
+non terminal type, statement, statementList, block, expression, exprTerm;
+non terminal logicalExpression, unaryExpression, relationalExpression, additiveExpression,
+             multiplicativeExpression, powerExpression;
+non terminal paramList, param, arrayDecl, arrayAccess, returnStmt;
+non terminal varDecl, assignStmt, showStmt, getStmt, ifStmt, loopStmt, forStmt, forVarDec;
+non terminal condition, conditionList, elsePart, arrayLiteral, arrayElements;
+non terminal dimensions;
+
+/* Precedencia */
+precedence left OR;
+precedence left AND;
+precedence left EQUAL, NOT_EQUAL;
+precedence left LESS, LESS_EQUAL, GREATER, GREATER_EQUAL;
+precedence left PLUS, MINUS;
+precedence left MULTIPLY, DIVIDE, INT_DIV, MODULO;
+precedence right POWER;
+precedence right INCREMENT, DECREMENT;
+precedence right NOT;
+
+/* Regla de inicio */
+start with program;
+
+/* ============ PRODUCCIONES ============ */
+
+/* 1. PROGRAMA */
+program ::= statementList:sl functionList:fl mainFunction:mf
+    {:
+        Nodo raizNodo = new Nodo("program");
+        raizNodo.addHijo((Nodo)sl);
+        raizNodo.addHijo((Nodo)fl);
+        raizNodo.addHijo((Nodo)mf);
+        arbol = new ArbolSintactico(raizNodo);
+        RESULT = raizNodo;
+    :}
+    | statementList:sl functionList:fl
+    {:
+        Nodo raizNodo = new Nodo("program");
+        raizNodo.addHijo((Nodo)sl);
+        raizNodo.addHijo((Nodo)fl);
+        arbol = new ArbolSintactico(raizNodo);
+        RESULT = raizNodo;
+    :};
+/* 2. FUNCIÓN PRINCIPAL */
+mainFunction ::= COAL NAVIDAD block:b
+    {:
+        Nodo resultado = new Nodo("mainFunction");
+        resultado.addHijo(new Nodo("coal"));
+        resultado.addHijo(new Nodo("navidad"));
+        resultado.addHijo((Nodo)b);
+        RESULT = resultado;
+    :} |
+    COAL NAVIDAD LPAREN RPAREN block:b
+    {:
+        Nodo resultado = new Nodo("mainFunction");
+        resultado.addHijo(new Nodo("coal"));
+        resultado.addHijo(new Nodo("navidad"));
+        resultado.addHijo((Nodo)b);
+        RESULT = resultado;
+    :};
+
+/* 3. LISTA DE FUNCIONES */
+functionList ::=
+    {:
+        Nodo resultado = new Nodo("functionList");
+        RESULT = resultado;
+    :}
+    | functionList:fl functionDecl:fd
+    {:
+        Nodo resultado = new Nodo("functionList");
+        resultado.addHijo((Nodo)fl);
+        resultado.addHijo((Nodo)fd);
+        RESULT = resultado;
+    :};
+
+/* 4. DECLARACIÓN DE FUNCIÓN */
+functionDecl ::=
+     GIFT type:t IDENTIFIER:id LPAREN paramList:pl RPAREN block:b
+          {:
+              Nodo resultado = new Nodo("functionDecl");
+              resultado.addHijo(new Nodo("gift"));
+              resultado.addHijo((Nodo)t);
+
+              Nodo idNode = new Nodo(id.toString());
+              // VERIFICACIÓN NULL
+              if (t != null && ((Nodo)t).getTipo() != null) {
+                  idNode.setTipo(((Nodo)t).getTipo());
+              }
+              resultado.addHijo(idNode);
+
+              resultado.addHijo(new Nodo("¿"));
+              resultado.addHijo((Nodo)pl);
+              resultado.addHijo(new Nodo("?"));
+              resultado.addHijo((Nodo)b);
+
+              symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.FUNCTION, idleft, idright));
+
+              RESULT = resultado;
+          :};
+
+funcall ::= IDENTIFIER:id LPAREN arglist:al RPAREN
+    {:
+        Nodo resultado = new Nodo("funcall");
+        Nodo idNode = new Nodo(id.toString());
+        resultado.addHijo(idNode);
+        resultado.addHijo(new Nodo("¿"));
+        resultado.addHijo((Nodo)al);
+        resultado.addHijo(new Nodo("?"));
+        RESULT = resultado;
+    :};
+arglist ::=
+    {:
+        Nodo resultado = new Nodo("arglist");
+        RESULT = resultado;
+    :}
+    | expression:e
+    {:
+        Nodo resultado = new Nodo("arglist");
+        resultado.addHijo((Nodo)e);
+        RESULT = resultado;
+    :}
+    | arglist:al COMMA expression:e
+    {:
+        Nodo resultado = new Nodo("arglist");
+        Nodo alNodo = (Nodo)al;
+        for (Nodo hijo : alNodo.hijos) {
+            resultado.addHijo(hijo);
+        }
+        resultado.addHijo(new Nodo(","));
+        resultado.addHijo((Nodo)e);
+        RESULT = resultado;
+    :};
+
+/* 5. LISTA DE PARÁMETROS */
+paramList ::=
+    {:
+        Nodo resultado = new Nodo("paramList");
+        resultado.addHijo(new Nodo("¿"));
+        resultado.addHijo(new Nodo("?"));
+        RESULT = resultado;
+    :}
+    | param:p
+    {:
+        Nodo resultado = new Nodo("paramList");
+        resultado.addHijo(new Nodo("¿"));
+        resultado.addHijo((Nodo)p);
+        resultado.addHijo(new Nodo("?"));
+        RESULT = resultado;
+    :}
+    | paramList:pl COMMA param:p
+    {:
+        Nodo resultado = new Nodo("paramList");
+        resultado.addHijo(new Nodo("¿"));
+
+        Nodo plNodo = (Nodo)pl;
+        for (Nodo hijo : plNodo.hijos) {
+            if (!hijo.lexema.equals("¿") && !hijo.lexema.equals("?")) {
+                resultado.addHijo(hijo);
+            }
+        }
+
+        resultado.addHijo(new Nodo(","));
+        resultado.addHijo((Nodo)p);
+        resultado.addHijo(new Nodo("?"));
+        RESULT = resultado;
+    :};
+
+/* 6. PARÁMETRO */
+param ::= type:t IDENTIFIER:id
+    {:
+        Nodo resultado = new Nodo("param");
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo());
+        resultado.addHijo(idNode);
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.PARAM, idleft, idright));
+        RESULT = resultado;
+    :};
+
+/* 7. TIPOS */
+type ::= INT
+    {:
+        Nodo resultado = new Nodo("int");
+        resultado.setTipo("int");
+        RESULT = resultado;
+    :}
+    | FLOAT
+    {:
+        Nodo resultado = new Nodo("float");
+        resultado.setTipo("float");
+        RESULT = resultado;
+    :}
+    | BOOL
+    {:
+        Nodo resultado = new Nodo("bool");
+        resultado.setTipo("bool");
+        RESULT = resultado;
+    :}
+    | CHAR
+    {:
+        Nodo resultado = new Nodo("char");
+        resultado.setTipo("char");
+        RESULT = resultado;
+    :}
+    | STRING
+    {:
+        Nodo resultado = new Nodo("string");
+        resultado.setTipo("string");
+        RESULT = resultado;
+    :};
+
+/* 8. BLOQUE */
+block ::= LBRACE
+    {:
+        symtab.enterScope();
+    :}
+    statementList:sl
+    RBRACE
+    {:
+        Nodo resultado = new Nodo("block");
+        resultado.addHijo(new Nodo("¡"));
+
+        if (sl != null) {
+            resultado.addHijo((Nodo)sl);
+        } else {
+            Nodo emptyList = new Nodo("statementList");
+            resultado.addHijo(emptyList);
+        }
+
+        resultado.addHijo(new Nodo("!"));
+
+        symtab.exitScope();
+        RESULT = resultado;
+    :};
+
+/* 9. LISTA DE SENTENCIAS */
+statementList ::=
+    {:
+        Nodo resultado = new Nodo("statementList");
+        RESULT = resultado;
+    :}
+    | statementList:sl statement:s
+    {:
+        Nodo resultado = new Nodo("statementList");
+        resultado.addHijo((Nodo)sl);
+        resultado.addHijo((Nodo)s);
+        RESULT = resultado;
+    :};
+
+/* 10. SENTENCIAS */
+statement ::= varDecl:vd
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)vd);
+        RESULT = resultado;
+    :}
+    | arrayDecl:ad
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)ad);
+        RESULT = resultado;
+    :}
+    | assignStmt:as
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)as);
+        RESULT = resultado;
+    :}
+    | showStmt:ss
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)ss);
+        RESULT = resultado;
+    :}
+    | getStmt:gs
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)gs);
+        RESULT = resultado;
+    :}
+    | ifStmt:is
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)is);
+        RESULT = resultado;
+    :}
+    | loopStmt:ls
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)ls);
+        RESULT = resultado;
+    :}
+    | forStmt:fs
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)fs);
+        RESULT = resultado;
+    :}
+    | returnStmt:rs
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)rs);
+        RESULT = resultado;
+    :}
+    | BREAK ENDL
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo(new Nodo("break"));
+        RESULT = resultado;
+    :}
+    | funcall:fc ENDL
+    {:
+        Nodo resultado = new Nodo("statement");
+        resultado.addHijo((Nodo)fc);
+        RESULT = resultado;
+    :};
+
+/* 11. DECLARACIÓN DE VARIABLE */
+varDecl ::= LOCAL type:t IDENTIFIER:id ENDL
+    {:
+        Nodo resultado = new Nodo("varDecl");
+        resultado.addHijo(new Nodo("local"));
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo());
+        resultado.addHijo(idNode);
+        resultado.addHijo(new Nodo("endl"));
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.LOCAL_VAR, idleft, idright));
+        RESULT = resultado;
+    :}
+    | LOCAL type:t IDENTIFIER:id ASSIGN expression:e ENDL
+    {:
+        Nodo resultado = new Nodo("varDecl");
+        resultado.addHijo(new Nodo("local"));
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo());
+        resultado.addHijo(idNode);
+        resultado.addHijo(new Nodo("="));
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("endl"));
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.LOCAL_VAR, idleft, idright));
+        RESULT = resultado;
+    :}
+    | WORLD type:t IDENTIFIER:id ENDL
+    {:
+        Nodo resultado = new Nodo("varDecl");
+        resultado.addHijo(new Nodo("world"));
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo());
+        resultado.addHijo(idNode);
+        resultado.addHijo(new Nodo("endl"));
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.GLOBAL_VAR, idleft, idright));
+        RESULT = resultado;
+    :}
+    | WORLD type:t IDENTIFIER:id ASSIGN expression:e ENDL
+    {:
+        Nodo resultado = new Nodo("varDecl");
+        resultado.addHijo(new Nodo("world"));
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo());
+        resultado.addHijo(idNode);
+        resultado.addHijo(new Nodo("="));
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("endl"));
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.GLOBAL_VAR, idleft, idright));
+        RESULT = resultado;
+    :};
+
+/* 12. DECLARACIÓN DE ARRAY */
+arrayDecl ::= LOCAL type:t IDENTIFIER:id dimensions:d ENDL
+    {:
+        Nodo resultado = new Nodo("arrayDecl");
+        resultado.addHijo(new Nodo("local"));
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo() + "[]");
+        resultado.addHijo(idNode);
+        resultado.addHijo((Nodo)d);
+        resultado.addHijo(new Nodo("endl"));
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.LOCAL_ARRAY, idleft, idright));
+        RESULT = resultado;
+    :}
+    | LOCAL type:t IDENTIFIER:id dimensions:d ASSIGN arrayLiteral:al ENDL
+    {:
+        Nodo resultado = new Nodo("arrayDecl");
+        resultado.addHijo(new Nodo("local"));
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo() + "[]");
+        resultado.addHijo(idNode);
+        resultado.addHijo((Nodo)d);
+        resultado.addHijo(new Nodo("="));
+        resultado.addHijo((Nodo)al);
+        resultado.addHijo(new Nodo("endl"));
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.LOCAL_ARRAY, idleft, idright));
+        RESULT = resultado;
+    :}
+    | WORLD type:t IDENTIFIER:id dimensions:d ENDL
+    {:
+        Nodo resultado = new Nodo("arrayDecl");
+        resultado.addHijo(new Nodo("world"));
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo() + "[]");
+        resultado.addHijo(idNode);
+        resultado.addHijo((Nodo)d);
+        resultado.addHijo(new Nodo("endl"));
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(), SymKind.GLOBAL_ARRAY, idleft, idright));
+        RESULT = resultado;
+    :}
+    | WORLD type:t IDENTIFIER:id dimensions:d ASSIGN arrayLiteral:al ENDL
+    {:
+        Nodo resultado = new Nodo("arrayDecl");
+        resultado.addHijo(new Nodo("world"));
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo() + "[]");
+        resultado.addHijo(idNode);
+        resultado.addHijo((Nodo)d);
+        resultado.addHijo(new Nodo("="));
+        resultado.addHijo((Nodo)al);
+        resultado.addHijo(new Nodo("endl"));
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.GLOBAL_ARRAY, idleft, idright));
+        RESULT = resultado;
+    :};
+
+/* 13. DIMENSIONES */
+dimensions ::= LBRACKET LITERAL_INTEGER:lit1 RBRACKET LBRACKET LITERAL_INTEGER:lit2 RBRACKET
+    {:
+        Nodo resultado = new Nodo("dimensions");
+        resultado.addHijo(new Nodo("["));
+        resultado.addHijo(new Nodo(lit1.toString()));
+        resultado.addHijo(new Nodo("]"));
+        resultado.addHijo(new Nodo("["));
+        resultado.addHijo(new Nodo(lit2.toString()));
+        resultado.addHijo(new Nodo("]"));
+        RESULT = resultado;
+    :}
+    | LBRACKET RBRACKET LBRACKET RBRACKET
+    {:
+        Nodo resultado = new Nodo("dimensions");
+        resultado.addHijo(new Nodo("["));
+        resultado.addHijo(new Nodo("]"));
+        resultado.addHijo(new Nodo("["));
+        resultado.addHijo(new Nodo("]"));
+        RESULT = resultado;
+    :};
+
+/* 14. LITERAL DE ARRAY */
+arrayLiteral ::= LBRACE LBRACE arrayElements:ae1 RBRACE COMMA LBRACE arrayElements:ae2 RBRACE RBRACE
+    {:
+        Nodo resultado = new Nodo("arrayLiteral");
+        resultado.addHijo(new Nodo("¡"));
+        resultado.addHijo(new Nodo("¡"));
+        resultado.addHijo((Nodo)ae1);
+        resultado.addHijo(new Nodo("!"));
+        resultado.addHijo(new Nodo(","));
+        resultado.addHijo(new Nodo("¡"));
+        resultado.addHijo((Nodo)ae2);
+        resultado.addHijo(new Nodo("!"));
+        resultado.addHijo(new Nodo("!"));
+        RESULT = resultado;
+    :}
+    | LBRACE arrayElements:ae RBRACE
+    {:
+        Nodo resultado = new Nodo("arrayLiteral");
+        resultado.addHijo(new Nodo("¡"));
+        resultado.addHijo((Nodo)ae);
+        resultado.addHijo(new Nodo("!"));
+        RESULT = resultado;
+    :};
+
+/* 15. ELEMENTOS DE ARRAY */
+arrayElements ::= expression:e
+    {:
+        Nodo resultado = new Nodo("arrayElements");
+        resultado.addHijo((Nodo)e);
+        RESULT = resultado;
+    :}
+    | arrayElements:ae COMMA expression:e
+    {:
+        Nodo resultado = new Nodo("arrayElements");
+        resultado.addHijo((Nodo)ae);
+        resultado.addHijo(new Nodo(","));
+        resultado.addHijo((Nodo)e);
+        RESULT = resultado;
+    :};
+
+/* 16. ASIGNACIÓN */
+assignStmt ::= IDENTIFIER:id ASSIGN expression:e ENDL
+    {:
+        Nodo resultado = new Nodo("assignStmt");
+        resultado.addHijo(new Nodo(id.toString()));
+        resultado.addHijo(new Nodo("="));
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("endl"));
+        RESULT = resultado;
+    :}
+    | arrayAccess:aa ASSIGN expression:e ENDL
+    {:
+        Nodo resultado = new Nodo("assignStmt");
+        resultado.addHijo((Nodo)aa);
+        resultado.addHijo(new Nodo("="));
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("endl"));
+        RESULT = resultado;
+    :};
+
+/* 17. ACCESO A ARRAY */
+arrayAccess ::= IDENTIFIER:id LBRACKET expression:e1 RBRACKET LBRACKET expression:e2 RBRACKET
+        {:
+            Nodo resultado = new Nodo("access");
+            resultado.addHijo(new Nodo(id.toString()));
+            resultado.addHijo(new Nodo("["));
+            resultado.addHijo((Nodo)e1);
+            resultado.addHijo(new Nodo("]"));
+            resultado.addHijo(new Nodo("["));
+            resultado.addHijo((Nodo)e2);
+            resultado.addHijo(new Nodo("]"));
+            RESULT = resultado;
+        :};
+
+/* 18. SHOW */
+showStmt ::= SHOW LPAREN expression:e RPAREN ENDL
+    {:
+        Nodo resultado = new Nodo("showStmt");
+        resultado.addHijo(new Nodo("show"));
+        resultado.addHijo(new Nodo("¿"));
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("?"));
+        resultado.addHijo(new Nodo("endl"));
+        RESULT = resultado;
+    :};
+
+/* 19. GET */
+getStmt ::= GET LPAREN RPAREN ENDL
+    {:
+        Nodo resultado = new Nodo("getStmt");
+        resultado.addHijo(new Nodo("get"));
+        resultado.addHijo(new Nodo("¿"));
+        resultado.addHijo(new Nodo("?"));
+        resultado.addHijo(new Nodo("endl"));
+        RESULT = resultado;
+    :};
+
+/* 20. DECIDE OF */
+ifStmt ::= DECIDE OF conditionList:cl elsePart:ep END DECIDE ENDL
+    {:
+        Nodo resultado = new Nodo("decideOf");
+        resultado.addHijo(new Nodo("decide"));
+        resultado.addHijo(new Nodo("of"));
+        resultado.addHijo((Nodo)cl);
+        resultado.addHijo((Nodo)ep);
+        resultado.addHijo(new Nodo("end"));
+        resultado.addHijo(new Nodo("decide"));
+        resultado.addHijo(new Nodo("endl"));
+        RESULT = resultado;
+    :};
+
+/* 21. LISTA DE CONDICIONES */
+conditionList ::= condition:c
+    {:
+        Nodo resultado = new Nodo("conditionList");
+        resultado.addHijo((Nodo)c);
+        RESULT = resultado;
+    :}
+    | conditionList:cl condition:c
+    {:
+        Nodo resultado = new Nodo("conditionList");
+        resultado.addHijo((Nodo)cl);
+        resultado.addHijo((Nodo)c);
+        RESULT = resultado;
+    :};
+
+/* 22. CONDICIÓN */
+condition ::= expression:e ARROW block:b
+    {:
+        Nodo resultado = new Nodo("condition");
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("->"));
+        resultado.addHijo((Nodo)b);
+        RESULT = resultado;
+    :};
+
+/* 23. PARTE ELSE */
+elsePart ::=
+    {:
+        Nodo resultado = new Nodo("elsePart");
+        RESULT = resultado;
+    :}
+    | ELSE ARROW block:b
+    {:
+        Nodo resultado = new Nodo("elsePart");
+        resultado.addHijo(new Nodo("else"));
+        resultado.addHijo(new Nodo("->"));
+        resultado.addHijo((Nodo)b);
+        RESULT = resultado;
+    :};
+
+/* 24. LOOP */
+loopStmt ::= LOOP statementList:sl EXIT WHEN expression:e ENDL END LOOP ENDL
+    {:
+        Nodo resultado = new Nodo("loopStmt");
+        resultado.addHijo(new Nodo("loop"));
+        resultado.addHijo((Nodo)sl);
+        resultado.addHijo(new Nodo("exit"));
+        resultado.addHijo(new Nodo("when"));
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("endl"));
+        resultado.addHijo(new Nodo("end"));
+        resultado.addHijo(new Nodo("loop"));
+        resultado.addHijo(new Nodo("endl"));
+        RESULT = resultado;
+    :};
+
+/* 25. FOR */
+forStmt ::= FOR LPAREN forVarDec:fvd expression:e1 ENDL expression:e2 RPAREN block:b
+    {:
+        Nodo resultado = new Nodo("forStmt");
+        resultado.addHijo(new Nodo("for"));
+        resultado.addHijo(new Nodo("¿"));
+        resultado.addHijo((Nodo)fvd);
+        resultado.addHijo((Nodo)e1);
+        resultado.addHijo(new Nodo("endl"));
+        resultado.addHijo((Nodo)e2);
+        resultado.addHijo(new Nodo("?"));
+        resultado.addHijo((Nodo)b);
+        RESULT = resultado;
+    :};
+
+/* 26. DECLARACIÓN EN FOR */
+forVarDec ::= type:t IDENTIFIER:id ASSIGN expression:e ENDL
+    {:
+        Nodo resultado = new Nodo("forVarDec");
+        resultado.addHijo((Nodo)t);
+
+        Nodo idNode = new Nodo(id.toString());
+        idNode.setTipo(((Nodo)t).getTipo());
+        resultado.addHijo(idNode);
+        resultado.addHijo(new Nodo("="));
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("endl"));
+
+        symtab.insert(new SymInfo((String)id, ((Nodo)t).getTipo(),SymKind.FOR_VAR, idleft, idright));
+        RESULT = resultado;
+    :};
+
+/* 27. RETURN */
+returnStmt ::= RETURN expression:e ENDL
+    {:
+        Nodo resultado = new Nodo("returnStmt");
+        resultado.addHijo(new Nodo("return"));
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("endl"));
+        RESULT = resultado;
+    :};
+
+/* 28. TÉRMINOS DE EXPRESIÓN */
+exprTerm ::= LITERAL_INTEGER:lit
+    {:
+        Nodo resultado = new Nodo(lit.toString());
+        resultado.setTipo("int");
+        RESULT = resultado;
+    :}
+    | LITERAL_FLOAT:lit
+    {:
+        Nodo resultado = new Nodo(lit.toString());
+        resultado.setTipo("float");
+        RESULT = resultado;
+    :}
+    | BOOL_LITERAL:lit
+    {:
+        Nodo resultado = new Nodo(lit.toString());
+        resultado.setTipo("bool");
+        RESULT = resultado;
+    :}
+    | CHAR_LITERAL:lit
+    {:
+        Nodo resultado = new Nodo(lit.toString());
+        resultado.setTipo("char");
+        RESULT = resultado;
+    :}
+    | STRING_LITERAL:lit
+    {:
+        Nodo resultado = new Nodo(lit.toString());
+        resultado.setTipo("string");
+        RESULT = resultado;
+    :}
+    | IDENTIFIER:id
+    {:
+        Nodo resultado = new Nodo(id.toString());
+        RESULT = resultado;
+    :}
+    | arrayAccess:aa
+    {:
+        RESULT = aa;
+    :}
+    | GET LPAREN RPAREN
+    {:
+        Nodo resultado = new Nodo("get");
+        resultado.addHijo(new Nodo("¿"));
+        resultado.addHijo(new Nodo("?"));
+        RESULT = resultado;
+    :}
+    | LPAREN expression:e RPAREN
+    {:
+        Nodo resultado = new Nodo("¿?");
+        resultado.addHijo(new Nodo("¿"));
+        resultado.addHijo((Nodo)e);
+        resultado.addHijo(new Nodo("?"));
+        RESULT = resultado;
+    :}
+    | funcall:fc
+   {:
+       RESULT = fc;
+   :};
+
+/* 29. EXPRESIÓN */
+/* Expresión lógica */
+expression ::= logicalExpression:le
+    {:
+        RESULT = le;
+    :};
+
+/* Expresiones lógicas: OR, AND */
+logicalExpression ::= relationalExpression:re
+    {:
+        RESULT = re;
+    :}
+    | logicalExpression:le OR relationalExpression:re
+    {:
+        Nodo resultado = new Nodo("~");  // OR
+        resultado.addHijo((Nodo)le);
+        resultado.addHijo((Nodo)re);
+        RESULT = resultado;
+    :}
+    | logicalExpression:le AND relationalExpression:re
+    {:
+        Nodo resultado = new Nodo("@");  // AND
+        resultado.addHijo((Nodo)le);
+        resultado.addHijo((Nodo)re);
+        RESULT = resultado;
+    :};
+
+/* Expresiones relacionales */
+relationalExpression ::= additiveExpression:ae
+    {:
+        RESULT = ae;
+    :}
+    | additiveExpression:ae1 EQUAL additiveExpression:ae2
+    {:
+        Nodo resultado = new Nodo("==");
+        resultado.addHijo((Nodo)ae1);
+        resultado.addHijo((Nodo)ae2);
+        RESULT = resultado;
+    :}
+    | additiveExpression:ae1 NOT_EQUAL additiveExpression:ae2
+    {:
+        Nodo resultado = new Nodo("!=");
+        resultado.addHijo((Nodo)ae1);
+        resultado.addHijo((Nodo)ae2);
+        RESULT = resultado;
+    :}
+    | additiveExpression:ae1 LESS additiveExpression:ae2
+    {:
+        Nodo resultado = new Nodo("<");
+        resultado.addHijo((Nodo)ae1);
+        resultado.addHijo((Nodo)ae2);
+        RESULT = resultado;
+    :}
+    | additiveExpression:ae1 LESS_EQUAL additiveExpression:ae2
+    {:
+        Nodo resultado = new Nodo("<=");
+        resultado.addHijo((Nodo)ae1);
+        resultado.addHijo((Nodo)ae2);
+        RESULT = resultado;
+    :}
+    | additiveExpression:ae1 GREATER additiveExpression:ae2
+    {:
+        Nodo resultado = new Nodo(">");
+        resultado.addHijo((Nodo)ae1);
+        resultado.addHijo((Nodo)ae2);
+        RESULT = resultado;
+    :}
+    | additiveExpression:ae1 GREATER_EQUAL additiveExpression:ae2
+    {:
+        Nodo resultado = new Nodo(">=");
+        resultado.addHijo((Nodo)ae1);
+        resultado.addHijo((Nodo)ae2);
+        RESULT = resultado;
+    :};
+
+/* Expresiones aritméticas */
+additiveExpression ::= multiplicativeExpression:me
+    {:
+        RESULT = me;
+    :}
+    | additiveExpression:ae PLUS multiplicativeExpression:me
+    {:
+        Nodo resultado = new Nodo("+");
+        resultado.addHijo((Nodo)ae);
+        resultado.addHijo((Nodo)me);
+        RESULT = resultado;
+    :}
+    | additiveExpression:ae MINUS multiplicativeExpression:me
+    {:
+        Nodo resultado = new Nodo("-");
+        resultado.addHijo((Nodo)ae);
+        resultado.addHijo((Nodo)me);
+        RESULT = resultado;
+    :};
+
+
+multiplicativeExpression ::= powerExpression:pe
+    {:
+        RESULT = pe;
+    :}
+    | multiplicativeExpression:me MULTIPLY powerExpression:pe
+    {:
+        Nodo resultado = new Nodo("*");
+        resultado.addHijo((Nodo)me);
+        resultado.addHijo((Nodo)pe);
+        RESULT = resultado;
+    :}
+    | multiplicativeExpression:me DIVIDE powerExpression:pe
+    {:
+        Nodo resultado = new Nodo("/");
+        resultado.addHijo((Nodo)me);
+        resultado.addHijo((Nodo)pe);
+        RESULT = resultado;
+    :}
+    | multiplicativeExpression:me INT_DIV powerExpression:pe
+    {:
+        Nodo resultado = new Nodo("//");
+        resultado.addHijo((Nodo)me);
+        resultado.addHijo((Nodo)pe);
+        RESULT = resultado;
+    :}
+    | multiplicativeExpression:me MODULO powerExpression:pe
+    {:
+        Nodo resultado = new Nodo("%");
+        resultado.addHijo((Nodo)me);
+        resultado.addHijo((Nodo)pe);
+        RESULT = resultado;
+    :};
+
+
+powerExpression ::= unaryExpression:ue
+    {:
+        RESULT = ue;
+    :}
+    | unaryExpression:ue POWER powerExpression:pe
+    {:
+        Nodo resultado = new Nodo("^");
+        resultado.addHijo((Nodo)ue);
+        resultado.addHijo((Nodo)pe);
+        RESULT = resultado;
+    :};
+
+/* Expresiones unarias */
+negative ::= MINUS unaryExpression:ue
+                 {:
+                     Nodo resultado = new Nodo("minus");
+                     resultado.addHijo((Nodo)ue);
+                     RESULT = resultado;
+                 :};
+
+unaryExpression ::= exprTerm:et
+    {:
+        RESULT =et;
+    :}
+    | MINUS unaryExpression:ue
+    {:
+        Nodo resultado = new Nodo("minus");
+        resultado.addHijo((Nodo)ue);
+        RESULT = resultado;
+    :}
+    | NOT unaryExpression:ue
+    {:
+        Nodo resultado = new Nodo("not");
+        resultado.addHijo((Nodo)ue);
+        RESULT = resultado;
+    :}
+    | INCREMENT unaryExpression:ue
+    {:
+        Nodo resultado = new Nodo("increment");
+        resultado.addHijo((Nodo)ue);
+        RESULT = resultado;
+    :}
+    | DECREMENT unaryExpression:ue
+    {:
+        Nodo resultado = new Nodo("decrement");
+        resultado.addHijo((Nodo)ue);
+        RESULT = resultado;
+    :};
+

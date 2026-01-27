@@ -1,0 +1,52 @@
+package generated;
+import java_cup.runtime.*;
+
+
+parser code {:
+
+    // Connect this parser to a scanner!
+    Lexer lex;
+    parser(Lexer lex){ this.lex=lex; }
+:}
+
+    /* define how to connect to the scanner! */
+    init with {: :};
+    scan with {: return lex.next_token();
+:};
+
+/* Terminales  */
+terminal
+    /* Palabras Reservadas */
+    WORLD, LOCAL, DECIDE, OF, ELSE, END, LOOP, EXIT, WHEN, FOR, GIFT,
+    NAVIDAD, COAL, SHOW, GET, RETURN, BREAK, ENDL,
+
+    /* Tipos de Datos */
+    INT, FLOAT, BOOL, CHAR, STRING,
+
+    /* Literales */
+    LITERAL_INTEGER, LITERAL_FLOAT, BOOL_LITERAL, CHAR_LITERAL, STRING_LITERAL,
+    IDENTIFIER,
+
+    /* Operadores Aritméticos */
+    PLUS, MINUS, MULTIPLY, DIVIDE, INT_DIV, MODULO, POWER,
+    INCREMENT, DECREMENT,
+
+    /* Operadores Relacionales */
+    LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, EQUAL, NOT_EQUAL,
+
+    /* Operadores Lógicos */
+    AND, OR, NOT,
+
+    /* Delimitadores */
+    LBRACE, RBRACE, LPAREN, RPAREN, LBRACKET, RBRACKET,
+
+    /* Puntuación */
+    COMMA, SEMI, COLON, DOT, ASSIGN, ARROW,
+
+    /* Especiales */
+    ERROR;
+
+/* regla vacía solo para que CUP funcione */
+non terminal programa;
+start with programa;
+programa ::= ;

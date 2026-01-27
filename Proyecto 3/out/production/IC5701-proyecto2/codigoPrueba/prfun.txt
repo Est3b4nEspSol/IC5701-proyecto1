@@ -1,0 +1,10 @@
+gift int fun1 ¿ ? ¡
+    return 5 endl
+!
+є
+gift int fun2 ¿ ? ¡
+    return 5 endl
+!
+
+coal navidad ¡
+!э

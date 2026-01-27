@@ -1,0 +1,17 @@
+token: 14 lexema: coal Línea: 1 Columna: 1
+token: 13 lexema: navidad Línea: 1 Columna: 6
+token: 49 lexema: ¡ Línea: 1 Columna: 14
+token: 3 lexema: local Línea: 2 Columna: 5
+token: 22 lexema: bool Línea: 2 Columna: 11
+token: 30 lexema: b2 Línea: 2 Columna: 16
+token: 56 lexema: = Línea: 2 Columna: 19
+token: 27 lexema: true Línea: 2 Columna: 21
+token: 19 lexema: endl Línea: 2 Columna: 26
+token: 3 lexema: local Línea: 3 Columna: 5
+token: 22 lexema: bool Línea: 3 Columna: 11
+token: 30 lexema: atun Línea: 3 Columna: 16
+token: 56 lexema: = Línea: 3 Columna: 21
+token: 30 lexema: Σ Línea: 3 Columna: 23
+token: 30 lexema: b2 Línea: 3 Columna: 25
+token: 19 lexema: endl Línea: 3 Columna: 28
+token: 50 lexema: ! Línea: 4 Columna: 1
